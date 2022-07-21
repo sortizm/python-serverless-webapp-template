@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "{{ cookiecutter.service_name }}"
+version = "{{ cookiecutter.version }}"
+description = "{{ cookiecutter.app_description }}"
+authors = ["{{ cookiecutter.author }} <{{ cookiecutter.email }}>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+aws-lambda-powertools = "^1.25.9"
+{%- if cookiecutter.with_dynamodb_table == "y" %}
+mypy-boto3-dynamodb = "^1.22.0"
+{%- endif %}
+{%- if cookiecutter.with_s3_bucket == "y" %}
+mypy-boto3-s3 = "^1.22.8"
+{%- endif %}
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+moto = "^3.1.7"
+pre-commit = "^2.19.0"
+black = "^22.3.0"
+mypy = "^0.942"
+isort = "^5.10.1"
+bandit = "^1.7.4"
+flake8 = "^4.0.1"
+vulture = "^2.3"
+openapi-core = "^0.14.2"
+openapi-spec-validator = "^0.4.0"
+types-PyYAML = "^6.0.7"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,11 @@
+{
+  "name": "{{ cookiecutter.service_name }}",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "serverless": "^3.15.2",
+    "serverless-domain-manager": "^6.0.3",
+    "serverless-prune-plugin": "^2.0.1",
+    "serverless-python-requirements": "^5.4.0"
+  }
+}

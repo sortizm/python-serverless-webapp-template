@@ -1,0 +1,46 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: check-merge-conflict
+
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.942
+    hooks:
+    -   id: mypy
+        args: [--ignore-missing-imports]
+        additional_dependencies: [types-PyYAML==6.0.7]
+
+-   repo: https://github.com/PyCQA/isort
+    rev: '5.10.1'
+    hooks:
+        -   id: isort
+            args: [--profile, black]
+
+-   repo: https://github.com/psf/black
+    rev: '22.3.0'
+    hooks:
+    -   id: black
+
+-   repo: https://github.com/pycqa/flake8
+    rev: '4.0.1'
+    hooks:
+    -   id: flake8
+        args: [--ignore=E501]
+
+-   repo: https://github.com/p1c2u/openapi-spec-validator
+    rev: '0.4.0'
+    hooks:
+        # https://github.com/p1c2u/openapi-spec-validator/blob/master/.pre-commit-hooks.yaml
+    -   id: openapi-spec-validator
+        name: openapi-spec-validator
+        entry: openapi-spec-validator
+        description: Hook to validate Open API specs.
+        language: python
+        files: .*openapi.*\.(json|yaml|yml)

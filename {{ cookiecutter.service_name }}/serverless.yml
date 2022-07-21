@@ -1,0 +1,120 @@
+service: {{ cookiecutter.service_name}}
+frameworkVersion: '3'
+package:
+  patterns:
+    - '!./**'
+    - '{{ cookiecutter.package_name }}/**'
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: ${opt:region, 'eu-west-1'}
+  stage: 'stage'
+{%- if cookiecutter.with_s3_bucket == "y" or cookiecutter.with_dynamodb_table == "y" %}
+  iam:
+    role:
+      statements:
+{%- endif %}
+{%- if cookiecutter.with_s3_bucket == "y" %}
+        - Effect: Allow
+          Action:
+            - s3:ListBucket
+            - s3:GetObject
+          Resource:
+            - Fn::GetAtt:
+              - ServiceBucket
+              - Arn
+{%- endif %}
+{%- if cookiecutter.with_dynamodb_table == "y" %}
+        - Effect: Allow
+          Action:
+            - dynamodb:DescribeTable
+            - dynamodb:GetItem
+            - dynamodb:Scan
+          Resource:
+            - Fn::GetAtt:
+              - ServiceTable
+              - Arn
+{%- endif %}
+  environment:
+    SERVICE_NAME: "{{ cookiecutter.service_name }}"
+{%- if cookiecutter.with_dynamodb_table == "y" %}
+    SERVICE_TABLE_NAME: ${self:custom.tables.service_table.name}
+{%- endif %}
+{%- if cookiecutter.with_s3_bucket == "y" %}
+    SERVICE_BUCKET_NAME: ${self:custom.buckets.service_bucket.name}
+{%- endif %}
+
+custom:
+  pythonRequirements:
+    usePoetry: true
+    layer: true
+
+  customDomain:
+    domainName: ${ssm:/infrastructure/api/domainName}
+    basePath: {{ cookiecutter.service_name }}
+    stage: ${self:provider.stage}
+    endpointType: regional
+    apiType: http
+    createRoute53Record: false
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 3
+
+{%- if cookiecutter.with_dynamodb_table == "y" %}
+  tables:
+    service_table:
+      name: "{{ cookiecutter.service_name }}.table"
+{%- endif %}
+
+{%- if cookiecutter.with_s3_bucket == "y" %}
+  buckets:
+    service_bucket:
+      name: "{{ cookiecutter.service_name }}-bucket"
+{%- endif %}
+
+{%- if cookiecutter.with_s3_bucket == "y" or cookiecutter.with_dynamodb_table == "y" %}
+resources:
+  Resources:
+{%- endif %}
+{%- if cookiecutter.with_dynamodb_table == "y" %}
+    ServiceTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Delete
+      UpdateReplacePolicy: Retain
+      Properties:
+        TableName: ${self:custom.tables.service_table.name}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+{%- endif %}
+
+{%- if cookiecutter.with_s3_bucket == "y" %}
+    ServiceBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Delete
+      UpdateReplacePolicy: Retain
+      Properties:
+        BucketName: ${self:custom.buckets.service_bucket.name}
+{%- endif %}
+
+functions:
+  {{ cookiecutter.package_name}}_api:
+    handler: {{ cookiecutter.package_name}}.controllers.controllers.handler
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+plugins:
+  - serverless-python-requirements
+  - serverless-domain-manager
+  - serverless-prune-plugin

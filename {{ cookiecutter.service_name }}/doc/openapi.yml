@@ -1,0 +1,47 @@
+openapi: 3.0.1
+
+info:
+  title: {{ cookiecutter.app_name }} API
+  description: {{ cookiecutter.app_description }}
+  version: 1.0.0
+
+paths:
+  /hello:
+    get:
+      description: hello world
+      responses:
+        "200":
+          description: hello world response
+          content:
+            application/json+hal:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        "default":
+          $ref: '#/components/responses/error'
+
+components:
+  responses:
+    error:
+      description: Error. Details in response.
+      content:
+        application/json+hal:
+          schema:
+            $ref: '#/components/schemas/error_response'
+
+  schemas:
+    error_response:
+      description: An error response
+      type: object
+      required:
+        - error_name
+        - error_description
+      properties:
+        error_name:
+          description: Name of the error
+          type: string
+        error_description:
+          description: A short description of the possible causes of the error
+          type: string

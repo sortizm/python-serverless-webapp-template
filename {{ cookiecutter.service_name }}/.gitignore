@@ -1,0 +1,16 @@
+.idea
+.python-version
+*egg-info
+__pycache__/
+dist
+.pytest_cache
+.mypy_cache
+
+.venv
+.python-version
+*egg-info
+__pycache__/
+dist
+
+node_modules
+/.serverless/

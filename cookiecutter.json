@@ -1,0 +1,11 @@
+{
+  "app_name": "",
+  "app_description": "",
+  "service_name": "{{ cookiecutter.app_name.lower().replace(' ', '-') }}",
+  "package_name": "{{ cookiecutter.app_name.lower().replace(' ', '_').replace('-', '_') }}",
+  "author": "Steve Ortiz",
+  "email": "",
+  "version": "0.1.0",
+  "with_dynamodb_table": "n",
+  "with_s3_bucket": "n"
+}
