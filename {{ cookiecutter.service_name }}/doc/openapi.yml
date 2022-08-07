@@ -45,3 +45,51 @@ components:
         error_description:
           description: A short description of the possible causes of the error
           type: string
+
+    hal_self_link:
+      type: object
+      required:
+        - _links
+      properties:
+        _links:
+          type: object
+          required:
+            - self
+          properties:
+            self:
+              allOf:
+                - description: a link pointing to the containing resource
+                - $ref: "#/components/schemas/hal_link"
+                - example:
+                    href: "/self/this"
+
+    hal_nav_links:
+      type: object
+      properties:
+        _links:
+          type: object
+          properties:
+            prev:
+              allOf:
+                - description: navigate to previous page of paginated resource list
+                - $ref: "#/components/schemas/hal_link"
+                - example:
+                    href: "/self/prev"
+            next:
+              allOf:
+                - description: navigate to next page of paginated resource list
+                - $ref: "#/components/schemas/hal_link"
+                - example:
+                    href: "/self/next"
+
+    hal_link:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+        templated:
+          type: boolean
+      additionalProperties:
+        type: string
