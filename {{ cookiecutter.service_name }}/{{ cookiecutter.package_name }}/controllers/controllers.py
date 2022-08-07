@@ -10,7 +10,7 @@ from {{ cookiecutter.package_name }} import app
 def hello_world() -> Response:
     return Response(
         status_code=200,
-        body=json.dumps({"msg": "hello world"}),
+        body=json.dumps({"msg": "hello world", "_links": {"self": {"href": "/hello"}}}),
         content_type="application/json+hal"
     )
 

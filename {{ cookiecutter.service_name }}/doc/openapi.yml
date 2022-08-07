@@ -15,10 +15,12 @@ paths:
           content:
             application/json+hal:
               schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
+                allOf:
+                  - $ref: "#/components/schemas/hal_self_link"
+                  - type: object
+                    properties:
+                      msg:
+                        type: string
         "default":
           $ref: '#/components/responses/error'
 
