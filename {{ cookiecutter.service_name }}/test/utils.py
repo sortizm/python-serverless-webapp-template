@@ -1,5 +1,5 @@
 import json
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 
 import yaml
 from aws_lambda_powertools.event_handler.api_gateway import Response
@@ -14,7 +14,7 @@ from {{ cookiecutter.package_name }}.controllers.controllers import handler
 
 def openapi_response_from_api_response(response: Response) -> OpenAPIResponse:
     return OpenAPIResponse(
-        data=json.loads(response.body or ""),
+        data=json.loads(response.body) if response.body else None,
         mimetype=response.headers.get("Content-Type"),
         status_code=response.status_code,
     )
@@ -46,7 +46,9 @@ def is_valid_openapi_response(
     return result.errors == []
 
 
-def route_request(url: str, method: str = "GET") -> Response:
+def route_request(
+    url: str, method: str = "GET", body: Optional[Dict[str, Any]] = None
+) -> Response:
     route, query_string = url.split("?") if "?" in url else (url, "")
     event = {
         "version": "2.0",
@@ -73,6 +75,8 @@ def route_request(url: str, method: str = "GET") -> Response:
         "pathParameters": {"proxy": str(route).lstrip("/")},
         "isBase64Encoded": False,
     }
+    if body:
+        event["body"] = json.dumps(body)
     raw_response = handler(event, None)
     return Response(
         status_code=raw_response.get("statusCode"),
