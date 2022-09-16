@@ -1,4 +1,6 @@
+import logging
 import os
+from logging import Logger
 from typing import Iterator
 
 import boto3
@@ -16,6 +18,7 @@ from {{ cookiecutter.package_name }} import di
 
 @pytest.fixture(autouse=True)
 def environment_variables() -> None:
+    os.environ["SERVICE_NAME"] = "{{ cookiecutter.service_name }}"
     os.environ["AWS_DEFAULT_REGION"] = "eu-west-1"
 {%- if cookiecutter.with_dynamodb_table == "y" %}
     os.environ["SERVICE_TABLE_NAME"] = "test_service_table"
@@ -62,3 +65,10 @@ def service_bucket(environment_variables) -> Iterator[Bucket]:
 @pytest.fixture(autouse=True)
 def clear_di_cache():
     di.clear()
+
+@pytest.fixture(autouse=True)
+def logger() -> Logger:
+    logger = logging.getLogger(os.getenv("SERVICE_NAME"))
+    logger.setLevel("DEBUG")
+    di[Logger] = logger
+    return logger

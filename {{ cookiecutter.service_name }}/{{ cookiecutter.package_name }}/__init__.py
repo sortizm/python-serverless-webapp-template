@@ -1,4 +1,5 @@
 import os
+from logging import Logger
 from pathlib import Path
 from typing import Dict, Any
 
@@ -12,7 +13,9 @@ from mypy_boto3_s3.service_resource import Bucket
 {%- endif %}
 
 
-app = APIGatewayHttpResolver(strip_prefixes=["/{{ cookiecutter.service_name }}"])
+from {{ cookiecutter.package_name }}.logger import init_logger
+
+app = APIGatewayHttpResolver()
 
 
 def get_openapi_schema_location() -> Path:
@@ -35,7 +38,9 @@ def get_service_bucket() -> Bucket:
 
 
 def init_di() -> Dict:
+    _logger = init_logger()
     cont: Dict[Any, Any] = {
+        Logger: _logger
     }
     return cont
 
