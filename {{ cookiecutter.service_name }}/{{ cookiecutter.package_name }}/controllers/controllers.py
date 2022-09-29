@@ -23,22 +23,25 @@ def handle_exception(ex: Exception):
     logger: Logger = di[Logger]
     logger.info(metadata)
     if isinstance(ex, NotFoundError):
-        logger.error(f"Path not found: {app.current_event.path}")
-        error_response = {
-            "error_name": "Path not found",
-            "error_description": app.current_event.path,
-        }
+        logger.error(
+            f"Not found: {app.current_event.http_method} - {app.current_event.path}"
+        )
+        return Response(
+            status_code=404,
+            content_type="application/json+hal",
+            body=None,
+        )
     else:
         error_response = {
             "error_name": ex.__class__.__name__,
             "error_description": str(ex),
         }
 
-    return Response(
-        status_code=500,
-        content_type="application/json+hal",
-        body=json.dumps(error_response),
-    )
+        return Response(
+            status_code=500,
+            content_type="application/json+hal",
+            body=json.dumps(error_response),
+        )
 
 
 def handler(event, context):

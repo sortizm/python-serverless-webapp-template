@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Dict, Any
 
 import boto3
-from aws_lambda_powertools.event_handler import APIGatewayHttpResolver
+from aws_lambda_powertools.event_handler import APIGatewayHttpResolver, CORSConfig
 {%- if cookiecutter.with_dynamodb_table == "y" %}
 from mypy_boto3_dynamodb.service_resource import Table
 {%- endif %}
@@ -15,7 +15,8 @@ from mypy_boto3_s3.service_resource import Bucket
 
 from {{ cookiecutter.package_name }}.logger import init_logger
 
-app = APIGatewayHttpResolver()
+cors_config = CORSConfig()  # TODO: configure allowed_origins before deploying to prod
+app = APIGatewayHttpResolver(cors=cors_config)
 
 
 def get_openapi_schema_location() -> Path:
